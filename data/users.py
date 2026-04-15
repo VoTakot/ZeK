@@ -1,0 +1,28 @@
+from sqlalchemy import Column, Integer, String, DateTime, orm
+from hashlib import md5
+
+from sqlalchemy_serializer import SerializerMixin
+
+from .db_session import SqlAlchemyBase
+from flask_login import UserMixin
+
+
+class User(SqlAlchemyBase, UserMixin, SerializerMixin):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    login = Column(String, unique=True)
+    surname = Column(String)
+    name = Column(String)
+    age = Column(Integer)
+    birthday = Column(DateTime)
+    description = Column(String)
+    image = Column(String)
+    email = Column(String, unique=True)
+    hashed_password = Column(String)
+
+    def hash_password(self, password):
+        self.hashed_password = md5(password.encode()).hexdigest()
+
+    def check_password(self, password):
+        return self.hashed_password == md5(password.encode()).hexdigest()
