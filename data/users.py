@@ -11,7 +11,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    login = Column(String, unique=True)
+    username = Column(String, unique=True)
     surname = Column(String)
     name = Column(String)
     age = Column(Integer)
