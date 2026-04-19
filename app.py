@@ -7,6 +7,7 @@ from data import db_session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from data.users import User
 from forms.login_form import LoginForm
+from forms.register_form import RegisterForm
 
 load_dotenv('.env')
 
@@ -47,6 +48,25 @@ def login():
             return redirect('/')
         return render_template('login.html', form=login_form, message='Ошибка входа')
     return render_template('login.html', form=login_form)
+
+
+@app.route('/register')
+def register():
+    register_form = RegisterForm()
+    if register_form.validate_on_submit():
+        session = db_session.create_session()
+        user = session.query(User).filter(User.email == register_form.email.data).first()
+        if user:
+            return render_template('register.html', form=register_form, message='Почта уже занята')
+        new_user = User(
+
+        )
+        new_user.hash_password(new_user.hashed_password)
+        session.add(new_user)
+        session.commit()
+        login_user(new_user)
+        return redirect('/')
+    return render_template('register.html', form=register_form)
 
 
 @app.route('/')

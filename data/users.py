@@ -15,9 +15,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     surname = Column(String)
     name = Column(String)
     age = Column(Integer)
-    birthday = Column(DateTime)
     description = Column(String)
-    image = Column(String)
+    avatar = Column(String)
     email = Column(String, unique=True)
     hashed_password = Column(String)
 
