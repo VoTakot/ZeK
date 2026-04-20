@@ -56,6 +56,10 @@ def index():
     return render_template('base.html', title='ZeK')
 
 
+@app.route('/video')
+def
+
+
 if __name__ == '__main__':
     db_session.global_init('db/Zek.db')
     app.run('127.0.0.1', 8080)
