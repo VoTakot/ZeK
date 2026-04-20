@@ -1,4 +1,5 @@
 import os
+import uuid
 
 import flask_login
 from flask import Flask, render_template, redirect
@@ -50,7 +51,7 @@ def login():
     return render_template('login.html', form=login_form)
 
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     register_form = RegisterForm()
     if register_form.validate_on_submit():
@@ -58,8 +59,13 @@ def register():
         user = session.query(User).filter(User.email == register_form.email.data).first()
         if user:
             return render_template('register.html', form=register_form, message='Почта уже занята')
+        avatar_filename = uuid.uuid4().hex + '.png'
+        with open('static/images/avatars/' + avatar_filename, mode='wb') as avatar:
+            avatar.write(register_form.avatar.data)
         new_user = User(
-
+            username=register_form.username.data, surname=register_form.surname.data, name=register_form.name.data,
+            age=register_form.age.data, description=register_form.description.data, avatar='static/images/avatars/' + avatar_filename,
+            email=register_form.email.data, hashed_password=register_form.hashed_password.data, is_deleted=False
         )
         new_user.hash_password(new_user.hashed_password)
         session.add(new_user)

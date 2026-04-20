@@ -15,7 +15,7 @@ class RegisterForm(FlaskForm):
     surname = StringField('Фамилия', validators=[DataRequired()])
     name = StringField('Имя', validators=[DataRequired()])
     age = IntegerField('Возраст', validators=[DataRequired()])
-    username = StringField('Возраст', validators=[DataRequired(), username_validator, Length(min=6, max=20)])
+    username = StringField('Username', validators=[DataRequired(), username_validator, Length(min=6, max=20)])
     email = EmailField('Email', validators=[DataRequired()])
     description = StringField('Описание', validators=[DataRequired(), Length(max=40)])
     avatar = FileField('Аватар', validators=[DataRequired()])

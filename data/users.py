@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, orm
+from sqlalchemy import Column, Integer, String, Boolean, orm
 from hashlib import md5
 
 from sqlalchemy_serializer import SerializerMixin
@@ -19,6 +19,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     avatar = Column(String)
     email = Column(String, unique=True)
     hashed_password = Column(String)
+    is_deleted = Column(Boolean)
 
     def hash_password(self, password):
         self.hashed_password = md5(password.encode()).hexdigest()
