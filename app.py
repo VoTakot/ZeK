@@ -94,3 +94,4 @@ def logout():
 if __name__ == '__main__':
     db_session.global_init('db/Zek.db')
     app.run('127.0.0.1', 8080)
+
