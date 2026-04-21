@@ -5,7 +5,7 @@
     <title>Регистрация</title>
 </head>
 <body>
-<form action="" method="post">
+<form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <p>
         {{ form.surname.label }}<br>
@@ -50,7 +50,7 @@
     {% endfor %}
     <p>
         {{ form.avatar.label }}<br>
-        {{ form.avatar(class="form-control", type="avatar") }}<br>
+        {{ form.avatar(class="form-control", type="file") }}<br>
         {% for avatar in form.avatar.errors %}
     <div class="alert alert-danger" role="alert">
         {{ error }}

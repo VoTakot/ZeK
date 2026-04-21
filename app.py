@@ -59,9 +59,12 @@ def register():
         user = session.query(User).filter(User.email == register_form.email.data).first()
         if user:
             return render_template('register.html', form=register_form, message='Почта уже занята')
+        user = session.query(User).filter(User.username == register_form.username.data).first()
+        if user:
+            return render_template('register.html', form=register_form, message='Никнейм уже занят')
         avatar_filename = uuid.uuid4().hex + '.png'
-        with open('static/images/avatars/' + avatar_filename, mode='wb') as avatar:
-            avatar.write(register_form.avatar.data)
+        with open('static/images/avatars/' + avatar_filename, mode='wb') as avatar_file:
+            avatar_file.write(register_form.avatar.data.read())
         new_user = User(
             username=register_form.username.data, surname=register_form.surname.data, name=register_form.name.data,
             age=register_form.age.data, description=register_form.description.data, avatar='static/images/avatars/' + avatar_filename,
@@ -80,6 +83,12 @@ def index():
     if check_log_in():
         return redirect('/sign')
     return render_template('base.html', title='ZeK')
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/')
 
 
 if __name__ == '__main__':
