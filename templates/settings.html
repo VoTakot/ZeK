@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <br><br><br>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <img src="{{ current_user.avatar }}" height="300" style="border: 5px solid gold;">
+        </div>
+        <div class="col">
+            <h3 class="text-center">{{ current_user.name }} {{ current_user.surname }} <br>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop">
+                    Подробнее
+                </button>
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Профиль @{{ current_user.username
+                                    }}</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5 style="text-align: left;">Имя: {{ current_user.name }}</h5>
+                                <h5 style="text-align: left;">Фамилия: {{ current_user.surname }}</h5>
+                                <h5 style="text-align: left;">Никнейм: @{{ current_user.username }}</h5>
+                                <h5 style="text-align: left;">Возраст: {{ current_user.age }}</h5>
+                                <h5 style="text-align: left; word-break: break-all;">Описание: {{
+                                    current_user.description }}</h5>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="/edit_profile" role="button" class="btn btn-outline-secondary">Редактировать</a>
+            </h3>
+            <h6 class="text-center">@{{ current_user.username }} </h6>
+            <h4 style="word-break: break-all;">{{ current_user.description }}</h4>
+        </div>
+    </div>
+</div>
+{% endblock %}

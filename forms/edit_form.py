@@ -12,13 +12,13 @@ def username_validator(form, field):
         raise ValidationError('Поле должно содержать только латинские буквы и цифры')
 
 
-class RegisterForm(FlaskForm):
+class EditForm(FlaskForm):
     surname = StringField('Фамилия', validators=[DataRequired()])
     name = StringField('Имя', validators=[DataRequired()])
     age = IntegerField('Возраст', validators=[DataRequired()])
     username = StringField('Никнейм', validators=[DataRequired(), username_validator, Length(min=6, max=20)])
     email = EmailField('Email', validators=[DataRequired()])
     description = StringField('Описание', validators=[DataRequired(), Length(max=500)])
-    avatar = FileField('Аватар')
+    avatar = FileField('Аватар', validators=[DataRequired()])
     hashed_password = PasswordField('Пароль', validators=[DataRequired()])
-    submit = SubmitField('Регистрация')
+    submit = SubmitField('Изменить', )
