@@ -11,28 +11,57 @@
 <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
         <img src="static/images/system/icon.png" alt="Иконка Сайта" height="50">
+        <ul>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    Сервисы
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="/messenger">Мессенджер</a></li>
+                    <li><a class="dropdown-item" href="/video">Видео</a></li>
+                </ul>
+            </li>
+        </ul>
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
                 aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
             <div class="offcanvas-header">
-                <img src="{{ current_user.avatar }}" alt="Logo" height="75" class="d-inline-block align-text-top">
-                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">ZeK</h5>
+                <img src="{{ current_user.avatar }}" alt="Аватар" height="75" class="d-inline-block align-text-top">
+                <h5 class="offcanvas-title" style="margin-left: 15px; font-size: 25px;" id="offcanvasNavbarLabel">{{
+                    current_user.name }} {{ current_user.surname }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Параметры Аккаунта</a>
+                        <a class="nav-link active" aria-current="page" href="/settings">Параметры Аккаунта</a>
+                    </li>
+                    <li class="nav-item">
+                        <p style="font-size: 15;">Друзья</p>
                     </li>
                     <li class="nav-item">
                         <ul class="list-group">
-                                <li class="list-group-item">An item</li>
-                                <li class="list-group-item">A second item</li>
-                                <li class="list-group-item">A third item</li>
-                                <li class="list-group-item">A fourth item</li>
-                                <li class="list-group-item">And a fifth one</li>
+                            {% if current_user.friends and current_user.friends.strip() %}
+                            {% for friend_id in current_user.friends.split(',') %}
+                            {% if friend_id.strip() %}
+                            {% set friend = friends_data.get(friend_id|int) %}
+                            {% if friend %}
+                            <li class="list-group-item">
+                                <a class="nav-link active" aria-current="page"
+                                   href="/profile/{{ friend.username }}"><img src="{{ friend.avatar }}" alt="Аватар"
+                                                                              height="50"> {{ friend.name }} {{
+                                    friend.surname }}</a>
+                            </li>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                            {% else %}
+                            <li class="list-group-item">У вас пока нет друзей</li>
+                            {% endif %}
+                        </ul>
                     </li>
                     <li>
                         <p class="text-center">

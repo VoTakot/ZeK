@@ -25,6 +25,17 @@ def check_log_in():
         return True
 
 
+def check_friends_status():
+    friends_data = {}
+    if current_user.is_authenticated and current_user.friends:
+        session = db_session.create_session()
+        friend_ids = [int(fid.strip()) for fid in current_user.friends.split(',') if fid.strip()]
+        friends = session.query(User).filter(User.id.in_(friend_ids), User.is_deleted == 0).all()
+        friends_data = {friend.id: friend for friend in friends}
+        session.close()
+    return friends_data
+
+
 @login_manager.user_loader
 def user_loader(user_id):
     session = db_session.create_session()
@@ -68,7 +79,7 @@ def register():
         new_user = User(
             username=register_form.username.data, surname=register_form.surname.data, name=register_form.name.data,
             age=register_form.age.data, description=register_form.description.data, avatar='static/images/avatars/' + avatar_filename,
-            email=register_form.email.data, hashed_password=register_form.hashed_password.data, is_deleted=False
+            email=register_form.email.data, hashed_password=register_form.hashed_password.data, friends='', is_deleted=False
         )
         new_user.hash_password(new_user.hashed_password)
         session.add(new_user)
@@ -82,7 +93,8 @@ def register():
 def index():
     if check_log_in():
         return redirect('/sign')
-    return render_template('base.html', title='ZeK')
+    friends_data = check_friends_status()
+    return render_template('base.html', title='ZeK', friends_data=friends_data)
 
 
 @app.route('/logout')
