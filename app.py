@@ -83,7 +83,7 @@ def register():
                 print(register_form.avatar.data.read())
         else:
             print(2)
-            with open('static/images/system/icon.png', mode='rb') as system_avatar:
+            with open('static/images/system/system_avatar.png', mode='rb') as system_avatar:
                 with open('static/images/avatars/' + avatar_filename, mode='wb') as avatar_file:
                     avatar_file.write(system_avatar.read())
         new_user = User(

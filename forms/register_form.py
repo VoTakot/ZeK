@@ -20,5 +20,5 @@ class RegisterForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
     description = StringField('Описание', validators=[DataRequired(), Length(max=500)])
     avatar = FileField('Аватар')
-    hashed_password = PasswordField('Пароль', validators=[DataRequired()])
+    hashed_password = PasswordField('Пароль', validators=[DataRequired(), Length(min=8, max=20)])
     submit = SubmitField('Регистрация')

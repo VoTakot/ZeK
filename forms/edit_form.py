@@ -13,12 +13,12 @@ def username_validator(form, field):
 
 
 class EditForm(FlaskForm):
-    surname = StringField('Фамилия', validators=[DataRequired()])
-    name = StringField('Имя', validators=[DataRequired()])
-    age = IntegerField('Возраст', validators=[DataRequired()])
-    username = StringField('Никнейм', validators=[DataRequired(), username_validator, Length(min=6, max=20)])
-    email = EmailField('Email', validators=[DataRequired()])
-    description = StringField('Описание', validators=[DataRequired(), Length(max=500)])
-    avatar = FileField('Аватар', validators=[DataRequired()])
-    hashed_password = PasswordField('Пароль', validators=[DataRequired()])
+    surname = StringField('Фамилия')
+    name = StringField('Имя')
+    age = IntegerField('Возраст')
+    username = StringField('Никнейм', validators=[username_validator, Length(min=6, max=20)])
+    email = EmailField('Email')
+    description = StringField('Описание', validators=[Length(max=500)])
+    avatar = FileField('Аватар')
+    hashed_password = PasswordField('Пароль', validators=[Length(min=8, max=20)])
     submit = SubmitField('Изменить', )
