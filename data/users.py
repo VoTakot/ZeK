@@ -19,6 +19,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     avatar = Column(String)
     email = Column(String, unique=True)
     hashed_password = Column(String)
+    friends = Column(String)
     is_deleted = Column(Boolean)
 
     def hash_password(self, password):

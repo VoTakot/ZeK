@@ -1,4 +1,5 @@
 import os
+import time
 import uuid
 
 import flask_login
@@ -7,6 +8,7 @@ from dotenv import load_dotenv
 from data import db_session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from data.users import User
+from forms.edit_form import EditForm
 from forms.login_form import LoginForm
 from forms.register_form import RegisterForm
 
@@ -23,6 +25,17 @@ login_manager.init_app(app)
 def check_log_in():
     if not current_user.is_authenticated:
         return True
+
+
+def check_friends_status():
+    friends_data = {}
+    if current_user.is_authenticated and current_user.friends:
+        session = db_session.create_session()
+        friend_ids = [int(fid.strip()) for fid in current_user.friends.split(',') if fid.strip()]
+        friends = session.query(User).filter(User.id.in_(friend_ids), User.is_deleted == 0).all()
+        friends_data = {friend.id: friend for friend in friends}
+        session.close()
+    return friends_data
 
 
 @login_manager.user_loader
@@ -63,12 +76,22 @@ def register():
         if user:
             return render_template('register.html', form=register_form, message='Никнейм уже занят')
         avatar_filename = uuid.uuid4().hex + '.png'
-        with open('static/images/avatars/' + avatar_filename, mode='wb') as avatar_file:
-            avatar_file.write(register_form.avatar.data.read())
+        if register_form.avatar.data:
+            print(1)
+            with open('static/images/avatars/' + avatar_filename, mode='wb') as avatar_file:
+                avatar_file.write(register_form.avatar.data.read())
+                print(register_form.avatar.data.read())
+        else:
+            print(2)
+            with open('static/images/system/system_avatar.png', mode='rb') as system_avatar:
+                with open('static/images/avatars/' + avatar_filename, mode='wb') as avatar_file:
+                    avatar_file.write(system_avatar.read())
         new_user = User(
             username=register_form.username.data, surname=register_form.surname.data, name=register_form.name.data,
-            age=register_form.age.data, description=register_form.description.data, avatar='static/images/avatars/' + avatar_filename,
-            email=register_form.email.data, hashed_password=register_form.hashed_password.data, is_deleted=False
+            age=register_form.age.data, description=register_form.description.data,
+            avatar='static/images/avatars/' + avatar_filename,
+            email=register_form.email.data, hashed_password=register_form.hashed_password.data, friends='',
+            is_deleted=False
         )
         new_user.hash_password(new_user.hashed_password)
         session.add(new_user)
@@ -82,13 +105,65 @@ def register():
 def index():
     if check_log_in():
         return redirect('/sign')
-    return render_template('base.html', title='ZeK')
+    friends_data = check_friends_status()
+    return render_template('base.html', title='ZeK', friends_data=friends_data)
 
 
 @app.route('/logout')
 def logout():
+    if check_log_in():
+        return redirect('/sign')
     logout_user()
     return redirect('/')
+
+
+@app.route('/settings')
+def settings():
+    if check_log_in():
+        return redirect('/sign')
+    friends_data = check_friends_status()
+    return render_template('settings.html', title='Параметры аккаунта', friends_data=friends_data)
+
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+    if check_log_in():
+        return redirect('/sign')
+    friends_data = check_friends_status()
+
+    edit_form = EditForm()
+
+    if edit_form.validate_on_submit():
+        session = db_session.create_session()
+        user = session.query(User).filter(User.id == current_user.id).first()
+        email_exists = session.query(User).filter(
+            User.email == edit_form.email.data,
+            User.id != current_user.id
+        ).first()
+        if email_exists:
+            return render_template('edit_profile.html', form=edit_form, message='Почта уже занята')
+        username_exists = session.query(User).filter(
+            User.username == edit_form.username.data,
+            User.id != current_user.id
+        ).first()
+        if username_exists:
+            return render_template('edit_profile.html', form=edit_form, message='Никнейм уже занят')
+        with open(current_user.avatar, mode='wb') as avatar_file:
+            avatar_file.write(edit_form.avatar.data.read())
+        user.username = edit_form.username.data
+        user.surname = edit_form.surname.data
+        user.name = edit_form.name.data
+        user.age = edit_form.age.data
+        user.description = edit_form.description.data
+        user.email = edit_form.email.data
+
+        session.commit()
+        login_user(user)
+
+        return redirect('/')
+
+    return render_template('edit_profile.html', title='Редактировать профиль', friends_data=friends_data,
+                           form=edit_form)
 
 
 if __name__ == '__main__':

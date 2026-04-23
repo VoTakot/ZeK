@@ -3,24 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ title }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+
+<nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
-        <h1 class="navbar-brand">ZeK</h1>
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a href="/login" class="btn btn-primary mb-0">Войти</a>
-            </li>
-            <li class="nav-item">
-                <a href="/logout" class="btn btn-success mb-0 ms-1">Регистрация</a>
+        <a href="/"><img src="static/images/system/icon.png" alt="Иконка Сайта" height="50"></a>
+        <ul>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    Сервисы
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="/messenger">Мессенджер</a></li>
+                    <li><a class="dropdown-item" href="/video">Видео</a></li>
+                </ul>
             </li>
         </ul>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+            <div class="offcanvas-header">
+                <img src="{{ current_user.avatar }}" alt="Аватар" height="75" class="d-inline-block align-text-top">
+                <h5 class="offcanvas-title" style="margin-left: 15px; font-size: 25px;" id="offcanvasNavbarLabel">{{
+                    current_user.name }} {{ current_user.surname }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/settings">Параметры Аккаунта</a>
+                    </li>
+                    <li class="nav-item">
+                        <p style="font-size: 15;">Друзья</p>
+                    </li>
+                    <li class="nav-item">
+                        <ul class="list-group">
+                            {% if current_user.friends and current_user.friends.strip() %}
+                            {% for friend_id in current_user.friends.split(',') %}
+                            {% if friend_id.strip() %}
+                            {% set friend = friends_data.get(friend_id|int) %}
+                            {% if friend %}
+                            <li class="list-group-item">
+                                <a class="nav-link active" aria-current="page"
+                                   href="/profile/{{ friend.username }}"><img src="{{ friend.avatar }}" alt="Аватар"
+                                                                              height="50"> {{ friend.name }} {{
+                                    friend.surname }}</a>
+                            </li>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                            {% else %}
+                            <li class="list-group-item">У вас пока нет друзей 😥</li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                    <li>
+                        <p class="text-center">
+                            <img src="static/images/system/icon (full).png">
+                        </p>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </nav>
-
 {% block content %}{% endblock %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
 </body>
 </html>

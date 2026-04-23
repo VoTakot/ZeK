@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
-from wtforms import EmailField, PasswordField, BooleanField, SubmitField, StringField, ValidationError
+from wtforms import EmailField, PasswordField, SubmitField, ValidationError
 from wtforms.fields.numeric import IntegerField
 from wtforms.fields.simple import StringField
 from wtforms.validators import DataRequired, Length
@@ -16,9 +16,9 @@ class RegisterForm(FlaskForm):
     surname = StringField('Фамилия', validators=[DataRequired()])
     name = StringField('Имя', validators=[DataRequired()])
     age = IntegerField('Возраст', validators=[DataRequired()])
-    username = StringField('Username', validators=[DataRequired(), username_validator, Length(min=6, max=20)])
+    username = StringField('Никнейм', validators=[DataRequired(), username_validator, Length(min=6, max=20)])
     email = EmailField('Email', validators=[DataRequired()])
-    description = StringField('Описание', validators=[DataRequired(), Length(max=40)])
-    avatar = FileField('Аватар', validators=[DataRequired()])
-    hashed_password = PasswordField('Пароль', validators=[DataRequired()])
+    description = StringField('Описание', validators=[DataRequired(), Length(max=500)])
+    avatar = FileField('Аватар')
+    hashed_password = PasswordField('Пароль', validators=[DataRequired(), Length(min=8, max=20)])
     submit = SubmitField('Регистрация')
