@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chats-sidebar">
+        <div class="search-area">
+            <form method="GET" action="/messenger">
+                <div class="input-group">
+                    <input type="text" class="search-input" name="search" placeholder="Поиск чатов..."
+                           value="{{ search_query or '' }}">
+                    <button type="submit" class="btn btn-primary">🔍</button>
+                </div>
+            </form>
+        </div>
+        <div class="chats-list">
+            {% if chats %}
+            {% for chat in chats %}
+            <a href="/messenger?chat_id={{ chat.id }}"
+               class="chat-item {% if selected_chat and selected_chat.id == chat.id %}active{% endif %}">
+                {% if chat.is_group %}
+                <div class="chat-avatar-placeholder">👥</div>
+                {% else %}
+                <img src="{{ chat.avatar or '/static/images/system/system_avatar.png' }}" class="chat-avatar"
+                     alt="{{ chat.name }}">
+                {% endif %}
+                <div class="chat-info">
+                    <div class="chat-name">{{ chat.name }}</div>
+                    <div class="chat-last-message">{{ chat.last_message }}</div>
+                </div>
+                <div class="chat-meta">
+                    <div class="chat-time">{{ chat.last_message_time }}</div>
+                    {% if chat.unread > 0 %}
+                    <div class="unread-badge">{{ chat.unread }}</div>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+            {% else %}
+            <div class="text-center text-muted mt-4">Нет чатов</div>
+            {% endif %}
+        </div>
+        <div class="search-area">
+            <a href="#createChatModal" class="btn btn-primary"
+               style="width: 100%; text-align: center; text-decoration: none;">+ Новый чат</a>
+        </div>
+    </div>
+
+    <div class="chat-main">
+        {% if selected_chat %}
+        <div class="chat-header">
+            {% if selected_chat.is_group %}
+            <div class="chat-avatar-placeholder" style="width: 40px; height: 40px; font-size: 16px;">👥</div>
+            {% else %}
+            <img src="{{ selected_chat.avatar or '/static/images/system/system_avatar.png' }}"
+                 class="chat-header-avatar" alt="{{ selected_chat.name }}">
+            {% endif %}
+            <div class="chat-header-info">
+                <h5>{{ selected_chat.name }}</h5>
+                <p>{{ 'Групповой чат' if selected_chat.is_group else 'онлайн' }}</p>
+            </div>
+        </div>
+
+        <div class="messages-area">
+            {% for msg in messages %}
+            <div class="message {{ 'sent' if msg.is_sent else 'received' }}">
+                <div class="message-bubble">
+                    {% if msg.type == 'image' %}
+                    <img src="{{ msg.message }}" class="message-image" alt="Изображение">
+                    {% else %}
+                    {{ msg.message }}
+                    {% endif %}
+                    <div class="message-time">{{ msg.time }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="message-input-area">
+            <form method="POST" action="/send_message/{{ selected_chat.id }}" enctype="multipart/form-data">
+                <div class="input-group">
+                    <label class="btn-attach" style="cursor: pointer;">📎
+                        <input type="file" name="image" accept="image/*" style="display: none;"
+                               onchange="this.form.submit()">
+                    </label>
+                    <input type="text" class="message-input" name="message" placeholder="Введите сообщение...">
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </div>
+            </form>
+        </div>
+        {% else %}
+        <div class="no-chat-selected">
+            <div style="font-size: 48px; margin-bottom: 15px;">💬</div>
+            <h5>Выберите чат</h5>
+            <p class="text-muted">Нажмите на чат слева, чтобы начать общение</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div id="createChatModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Создать новый чат</h5>
+                <a href="#" class="btn-close">×</a>
+            </div>
+            <form method="POST" action="/create_chat">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Название чата</label>
+                        <input type="text" class="form-control" name="chat_name" placeholder="Введите название чата">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Добавить участников</label>
+                        <select class="form-control" name="members" multiple>
+                            {% for friend in friends_list %}
+                            <option value="{{ friend.id }}">{{ friend.name }} {{ friend.surname }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Удерживайте Ctrl для выбора нескольких участников</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-primary">Создать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

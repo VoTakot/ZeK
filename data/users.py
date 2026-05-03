@@ -22,6 +22,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     friends = Column(String)
     is_deleted = Column(Boolean)
 
+    messages = orm.relationship('Message', back_populates='user')
+
     def hash_password(self, password):
         self.hashed_password = md5(password.encode()).hexdigest()
 
